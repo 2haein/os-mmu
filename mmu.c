@@ -32,8 +32,8 @@ int mmu_address_translation(unsigned int virtual_address, unsigned int *physical
 void alloc_page_table(int address_space_bits, int page_bytes)
 {
     /* Please implement your own code below */
-    
-    int *ptr;
+
+
     int pte_size = 4;
     int page_table_size = pow(2, address_space_bits - (int)log2(page_bytes));
     page_table = (int*)malloc(page_table_size * pte_size);
@@ -89,7 +89,31 @@ int mmu_address_translation(unsigned int virtual_address, unsigned int *physical
     unsigned int pfn;
     int valid;
     int access;
-    vpn = virtual_address
+    char* ptbr;
+    int* pteAddr;
+    int pte;
+    int offset;
+
+    
+
+    vpn = virtual_address & vpn_mask >> shift;
+    pteAddr = ptbr + (vpn * sizeof(int));
+    pte = *pteAddr;
+
+    pfn = pte & 0xfffff000;
+
+    if(pte & 1 == 0){
+        return NOT_VALID;
+    } else if(pte & 3 == 1){
+        return NOT_ACCESSIBLE;
+    } else {
+        offset = virtual_address & offset_mask;
+        physical_address = (pfn << shift) | offset; 
+    }
+    
+
+
+
 
     // printf(" (vpn:%u, pfn: %u, valid: %d, access: %d) ", vpn, pfn, valid, access);
 
